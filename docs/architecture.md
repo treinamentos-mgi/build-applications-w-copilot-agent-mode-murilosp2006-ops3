@@ -70,3 +70,12 @@ Execução inicial (antes da implementação):
 - Frontend: 15 de 15 falham. As telas exibem "Implementação pendente", não têm `role="alert"` nem estados de carregamento e vazio. O teste de sugestões expira por tempo.
 
 Ordem de execução dos testes a cada etapa: dados, API e frontend, seguidos das compilações do backend e do frontend.
+
+Resultado final:
+
+- Dados: 5 de 5 passam.
+- API: 4 de 4 passam.
+- Frontend: 15 de 15 passam.
+- Compilação do backend e do frontend: sem erros.
+- Validação do exercício (`node .github/scripts/validate-exercise.mjs`): 11 de 11 checks passam.
+- Testes da raiz (`node --test tests/exercise-validation.test.mjs`): 42 de 42 passam.

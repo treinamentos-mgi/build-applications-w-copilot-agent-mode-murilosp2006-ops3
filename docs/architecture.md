@@ -45,13 +45,13 @@ flowchart LR
 
 Registre seu plano aqui antes de editar o código.
 
-- Decisão da camada de apresentação:
-- Decisão da camada de lógica:
-- Decisão da camada de dados:
-- Abordagem para registro de atividades:
-- Abordagem para gerenciamento de equipes:
-- Abordagem para o placar:
-- Abordagem para sugestões de treino:
+- Decisão da camada de apresentação: cada tela consome o cliente em `src/api/client.ts` e trata os estados de carregamento, vazio, erro (`role="alert"`) e dados. Os componentes não contêm regra de negócio.
+- Decisão da camada de lógica: as rotas apenas delegam para `services/octofitService.ts`. Entradas inválidas geram 4xx explícito, nunca 500 por falha de conversão de ID.
+- Decisão da camada de dados: os modelos Mongoose declaram os campos obrigatórios (`User`: nome, e-mail, meta; `Team`: nome, mascote; `Activity`: pessoa, equipe, tipo, minutos, pontos, data; `Workout`: foco, minutos, dificuldade). O seed continua passando pelos modelos.
+- Abordagem para registro de atividades: validar `userId` e `teamId` como IDs bem formados e existentes; calcular `points` e `occurredAt` no servidor; retornar 400 ou 404 para entradas inválidas.
+- Abordagem para gerenciamento de equipes: exigir `name` com retorno 400; persistir `name`, `mascot` e `members`; listar sem transformações.
+- Abordagem para o placar: agregar os pontos das atividades por equipe, ordenar de forma decrescente e atribuir `rank` a partir de 1.
+- Abordagem para sugestões de treino: buscar a pessoa pelo e-mail (404 se não existir); derivar `focus` da meta ou da atividade recente mais frequente; preencher `reason` com o motivo.
 
 ## Plano de testes
 
@@ -62,3 +62,11 @@ Registre os comandos executados e o significado de cada falha.
 - Testes do frontend: `npm test --prefix octofit-tracker/frontend`
 - Compilação do backend: `npm run build --prefix octofit-tracker/backend`
 - Compilação do frontend: `npm run build --prefix octofit-tracker/frontend`
+
+Execução inicial (antes da implementação):
+
+- Dados: 4 de 5 falham. Os modelos não declaram campos obrigatórios, então `validateSync()` retorna `undefined`. O teste de seed passa.
+- API: 4 de 4 falham. `createActivity` e `createTeam` lançam 501 em vez de 400; `getLeaderboard` retorna `[]`; `suggestWorkouts` retorna um treino genérico sem `focus` nem `reason` derivados da pessoa.
+- Frontend: 15 de 15 falham. As telas exibem "Implementação pendente", não têm `role="alert"` nem estados de carregamento e vazio. O teste de sugestões expira por tempo.
+
+Ordem de execução dos testes a cada etapa: dados, API e frontend, seguidos das compilações do backend e do frontend.

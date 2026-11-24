@@ -91,6 +91,17 @@ test('completed learner fixture satisfies step 1 through final composition check
   assert.doesNotThrow(() => checkFinalComposition(root));
 });
 
+test('etapa 2 aceita o contrato protegido em português e exige a indicação de idempotência', () => {
+  const root = completedFixture();
+  const contractFile = 'octofit-tracker/backend/tests/data.contract.test.ts';
+  const contract = fs.readFileSync(path.join(repositoryRoot, contractFile), 'utf8');
+  write(root, contractFile, contract);
+  assert.doesNotThrow(() => checks['step2-data'](root));
+
+  write(root, contractFile, contract.replace('de forma idempotente', 'de forma repetida'));
+  assert.throws(() => checks['step2-data'](root), /Seed contract test must mention/);
+});
+
 test('missing canonical step file is rejected', () => {
   const root = copyMetadata();
   fs.renameSync(path.join(root, '.github/steps/2-step.md'), path.join(root, '.github/steps/2-data.md'));

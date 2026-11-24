@@ -81,3 +81,4 @@ Essa baseline é histórica; não representa o estado verificado acima. Durante 
 - Compilação do backend e do frontend: sem erros.
 - Validação do exercício (`node .github/scripts/validate-exercise.mjs`): 11 de 11 checks passam.
 - Testes da raiz (`node --test tests/exercise-validation.test.mjs`): 42 de 42 passam.
+- Verificação final (`node .github/scripts/grade-step.mjs step5-final`): passa.

@@ -4,7 +4,7 @@ import { useApiData } from '../hooks/useApiData.js';
 type Props<T> = {
   title: string;
   description: string;
-  path: string;
+  load: () => Promise<T>;
   isEmpty: (data: T) => boolean;
   emptyText: string;
   render: (data: T) => ReactNode;
@@ -12,8 +12,8 @@ type Props<T> = {
 
 const LOAD_ERROR_TEXT = 'Não foi possível carregar os dados. Tente novamente mais tarde.';
 
-export function CapabilityCard<T>({ title, description, path, isEmpty, emptyText, render }: Props<T>) {
-  const state = useApiData<T>(path);
+export function CapabilityCard<T>({ title, description, load, isEmpty, emptyText, render }: Props<T>) {
+  const state = useApiData<T>(load);
   let content: ReactNode = null;
   if (state.status === 'loading') content = <p role="status">Carregando dados...</p>;
   if (state.status === 'error') content = <p role="alert" className="text-danger">{LOAD_ERROR_TEXT}</p>;

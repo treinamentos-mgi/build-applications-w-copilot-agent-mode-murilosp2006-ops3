@@ -61,7 +61,7 @@ Execute os comandos a partir da raiz do repositório, nesta ordem. Uma falha no 
 | --- | --- | --- |
 | Dados | `npm run test:data --prefix octofit-tracker/backend` | 5 de 5 testes passaram. |
 | API | `npm run test:api --prefix octofit-tracker/backend` | 4 de 4 testes passaram. |
-| Frontend | `npm test --prefix octofit-tracker/frontend` | 19 de 19 testes passaram. |
+| Frontend | `npm test --prefix octofit-tracker/frontend` | 20 de 20 testes passaram. |
 | Build do backend | `npm run build --prefix octofit-tracker/backend` | Concluído sem erros. |
 | Build do frontend | `npm run build --prefix octofit-tracker/frontend` | Typecheck e build Vite concluídos sem erros. |
 
@@ -77,7 +77,7 @@ Essa baseline é histórica; não representa o estado verificado acima. Durante 
 
 - Dados: 5 de 5 passam.
 - API: 4 de 4 passam.
-- Frontend: 19 de 19 passam.
+- Frontend: 20 de 20 passam.
 - Compilação do backend e do frontend: sem erros.
 - Validação do exercício (`node .github/scripts/validate-exercise.mjs`): 11 de 11 checks passam.
 - Testes da raiz (`node --test tests/exercise-validation.test.mjs`): 42 de 42 passam.

@@ -18,4 +18,10 @@ describe('Estado de erro para respostas com formato inesperado', () => {
       expect(screen.getByRole('heading', { level: 1, name: /octofit tracker/i })).toBeInTheDocument();
     });
   }
+
+  it('exibe alerta quando a requisição falha na rede', async () => {
+    vi.stubGlobal('fetch', vi.fn(async () => { throw new TypeError('Failed to fetch'); }));
+    render(<MemoryRouter initialEntries={['/teams']}><App /></MemoryRouter>);
+    await waitFor(() => expect(screen.getByRole('alert')).toHaveTextContent(/não foi possível carregar/i));
+  });
 });

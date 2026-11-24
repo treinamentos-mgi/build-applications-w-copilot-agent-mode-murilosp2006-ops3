@@ -43,39 +43,41 @@ flowchart LR
 
 ## Decisões de implementação
 
-Registre seu plano aqui antes de editar o código.
+As decisões adotadas mantêm apresentação, lógica e persistência separadas:
 
-- Decisão da camada de apresentação: cada tela consome o cliente em `src/api/client.ts` e trata os estados de carregamento, vazio, erro (`role="alert"`) e dados. Os componentes não contêm regra de negócio.
-- Decisão da camada de lógica: as rotas apenas delegam para `services/octofitService.ts`. Entradas inválidas geram 4xx explícito, nunca 500 por falha de conversão de ID.
-- Decisão da camada de dados: os modelos Mongoose declaram os campos obrigatórios (`User`: nome, e-mail, meta; `Team`: nome, mascote; `Activity`: pessoa, equipe, tipo, minutos, pontos, data; `Workout`: foco, minutos, dificuldade). O seed continua passando pelos modelos.
-- Abordagem para registro de atividades: validar `userId` e `teamId` como IDs bem formados e existentes; calcular `points` e `occurredAt` no servidor; retornar 400 ou 404 para entradas inválidas.
-- Abordagem para gerenciamento de equipes: exigir `name` com retorno 400; persistir `name`, `mascot` e `members`; listar sem transformações.
-- Abordagem para o placar: agregar os pontos das atividades por equipe, ordenar de forma decrescente e atribuir `rank` a partir de 1.
-- Abordagem para sugestões de treino: buscar a pessoa pelo e-mail (404 se não existir); derivar `focus` da meta ou da atividade recente mais frequente; preencher `reason` com o motivo.
+- Decisão da camada de apresentação: cada tela consome o cliente compartilhado em `src/api/client.ts` e trata carregamento, estado vazio, erro (`role="alert"`) e dados. Componentes não implementam regras de negócio.
+- Decisão da camada de lógica: as rotas delegam para `services/octofitService.ts`. Entradas inválidas recebem 4xx explícito, sem expor falhas de conversão de ID como erro 500.
+- Decisão da camada de dados: os modelos Mongoose declaram os campos obrigatórios: `User` (nome, e-mail, meta), `Team` (nome, mascote), `Activity` (pessoa, equipe, tipo, minutos, pontos, data) e `Workout` (foco, minutos, dificuldade). O seed persiste os dados pelos modelos.
+- Abordagem para registro de atividades: validar `userId` e `teamId` quanto ao formato e existência; calcular `points` e `occurredAt` no servidor; responder com 400 ou 404 quando a entrada for inválida.
+- Abordagem para gerenciamento de equipes: exigir `name` (400 quando ausente), persistir `name`, `mascot` e `members`, e listar os valores sem transformações.
+- Abordagem para o placar: agregar os pontos das atividades por equipe, ordenar do maior para o menor e atribuir `rank` começando em 1.
+- Abordagem para sugestões de treino: buscar a pessoa pelo e-mail (404 quando não encontrada), derivar `focus` da meta ou da atividade recente mais frequente e explicar a recomendação em `reason`.
 
 ## Plano de testes
 
-Registre os comandos executados e o significado de cada falha.
+Execute os comandos a partir da raiz do repositório, nesta ordem. Uma falha no teste de dados aponta para o contrato dos modelos ou do seed; no teste da API, para a capacidade indicada pelo caso; no frontend, para a integração ou o estado acessível da tela. Falhas de build indicam erros de tipos/compilação no backend ou de tipos/empacotamento no frontend.
 
-- Testes da camada de dados: `npm run test:data --prefix octofit-tracker/backend`
-- Testes da API: `npm run test:api --prefix octofit-tracker/backend`
-- Testes do frontend: `npm test --prefix octofit-tracker/frontend`
-- Compilação do backend: `npm run build --prefix octofit-tracker/backend`
-- Compilação do frontend: `npm run build --prefix octofit-tracker/frontend`
+| Etapa | Comando | Resultado verificado |
+| --- | --- | --- |
+| Dados | `npm run test:data --prefix octofit-tracker/backend` | 5 de 5 testes passaram. |
+| API | `npm run test:api --prefix octofit-tracker/backend` | 4 de 4 testes passaram. |
+| Frontend | `npm test --prefix octofit-tracker/frontend` | 20 de 20 testes passaram. |
+| Build do backend | `npm run build --prefix octofit-tracker/backend` | Concluído sem erros. |
+| Build do frontend | `npm run build --prefix octofit-tracker/frontend` | Typecheck e build Vite concluídos sem erros. |
 
-Execução inicial (antes da implementação):
+### Baseline do scaffold (antes da implementação)
 
 - Dados: 4 de 5 falham. Os modelos não declaram campos obrigatórios, então `validateSync()` retorna `undefined`. O teste de seed passa.
 - API: 4 de 4 falham. `createActivity` e `createTeam` lançam 501 em vez de 400; `getLeaderboard` retorna `[]`; `suggestWorkouts` retorna um treino genérico sem `focus` nem `reason` derivados da pessoa.
 - Frontend: 15 de 15 falham. As telas exibem "Implementação pendente", não têm `role="alert"` nem estados de carregamento e vazio. O teste de sugestões expira por tempo.
 
-Ordem de execução dos testes a cada etapa: dados, API e frontend, seguidos das compilações do backend e do frontend.
+Essa baseline é histórica; não representa o estado verificado acima. Durante a implementação, execute os testes na ordem dados, API e frontend e, em seguida, compile backend e frontend.
 
-Resultado final:
+### Resultado registrado
 
 - Dados: 5 de 5 passam.
 - API: 4 de 4 passam.
-- Frontend: 15 de 15 passam.
+- Frontend: 20 de 20 passam.
 - Compilação do backend e do frontend: sem erros.
 - Validação do exercício (`node .github/scripts/validate-exercise.mjs`): 11 de 11 checks passam.
 - Testes da raiz (`node --test tests/exercise-validation.test.mjs`): 42 de 42 passam.
